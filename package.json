@@ -1,6 +1,6 @@
 {
   "name": "@statuscasa/blog",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Koinosystems Blog Service - Cloudflare Worker (content management, articles, magazine)",
   "type": "module",
   "repository": {
