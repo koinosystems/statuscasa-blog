@@ -11,13 +11,13 @@
     {
       "binding": "BLOG_DB",
       "database_name": "statuscasa-blog-db",
-      "database_id": "00000000-0000-0000-0000-000000000000"
+      "database_id": "a05049af-9272-4372-92d3-b65763079b8e"
     }
   ],
   "kv_namespaces": [
     {
       "binding": "BLOG_KV",
-      "id": "00000000000000000000000000000000"
+      "id": "783b90edd2cd4c12b92cf97aea326936"
     }
   ],
   "vars": {

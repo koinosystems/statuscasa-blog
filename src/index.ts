@@ -17,8 +17,8 @@ const app = new Hono<{
   Variables: { userId: string; requestId: string };
 }>();
 
-app.use("*", corsAndSecurity());
-app.use("*", createRequestId());
+app.use("*", corsAndSecurity);
+app.use("*", createRequestId);
 
 app.route("/content", contentCommands);
 app.route("/content", contentQueries);
