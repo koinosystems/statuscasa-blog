@@ -1,0 +1,53 @@
+{
+  "name": "@statuscasa/blog",
+  "version": "1.0.0",
+  "description": "Koinosystems Blog Service - Cloudflare Worker (content management, articles, magazine)",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/statuscasa/statuscasa-blog.git"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "start": "npm run migrate:local && npm run dev",
+    "dev": "wrangler dev src/index.ts --port 9015 --local",
+    "build": "wrangler deploy --dry-run --outdir=dist",
+    "deploy": "wrangler deploy",
+    "migrate": "wrangler d1 migrations apply statuscasa-blog-db",
+    "migrate:local": "echo y | wrangler d1 migrations apply statuscasa-blog-db --local",
+    "migrate:remote": "echo y | wrangler d1 migrations apply statuscasa-blog-db --remote",
+    "db:seed:local": "wrangler d1 execute statuscasa-blog-db --local --file=seeds/insert_blog_posts.sql",
+    "db:seed:remote": "wrangler d1 execute statuscasa-blog-db --remote --file=seeds/insert_blog_posts.sql",
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix",
+    "format": "prettier --write src/",
+    "quality": "npm run lint && npm run format && npm run build",
+    "test": "jest --config jest.config.ts",
+    "test:watch": "jest --config jest.config.ts --watch",
+    "prepare": "husky"
+  },
+  "dependencies": {
+    "hono": "^4.12.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.0.0",
+    "@commitlint/cli": "^19.0.0",
+    "@commitlint/config-conventional": "^19.0.0",
+    "@eslint/js": "^9.0.0",
+    "@types/jest": "^29.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "eslint": "^9.0.0",
+    "eslint-plugin-simple-import-sort": "^12.0.0",
+    "husky": "^9.0.0",
+    "jest": "^30.0.0",
+    "prettier": "^3.0.0",
+    "ts-jest": "^29.4.0",
+    "tsx": "^4.0.0",
+    "typescript": "^6.0.0",
+    "wrangler": "^4.0.0"
+  }
+}

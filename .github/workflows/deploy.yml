@@ -1,0 +1,47 @@
+name: Deploy to Cloudflare Workers
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+          persist-credentials: false
+      - name: Setup git for private packages
+        run: |
+          git config --global url."https://x-access-token:${{ secrets.GH_PAT }}@github.com/".insteadOf "ssh://git@github.com/"
+          git config --global url."https://x-access-token:${{ secrets.GH_PAT }}@github.com/".insteadOf "https://github.com/"
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: "npm"
+      - run: npm install
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
+      - name: Auto-tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          BUMP=$(git log ${LAST_TAG}..HEAD --pretty=format:"%s" | grep -qE "^[a-z]+(\(.+\))?!:" && echo "major" || (echo "$(git log ${LAST_TAG}..HEAD --pretty=format:'%s')" | grep -qE "^feat(\(.+\))?:" && echo "minor" || echo "patch"))
+          npm version $BUMP --no-git-tag-version
+          VERSION=$(node -p "require('./package.json').version")
+          git add -A
+          git commit -m "chore(release): v${VERSION}"
+          git tag "v${VERSION}"
+          git push && git push --tags
+      - run: npm run migrate:remote
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+      - uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          command: deploy --config wrangler.jsonc
